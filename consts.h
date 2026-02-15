@@ -16,8 +16,8 @@
 #define NUMMOVES 5              // Number of different moves a player gets
 #define MAXPLAYERS 4            // Total number of players a game can have
 #define END_PERCENT 54          // End when this much of the map is full
-#define DEF_LINES 25            // Default number of lines on screen
-#define DEF_COLUMNS 80          // Default number of columns on screen
+#define DEF_SCREEN_LINES 25     // Default number of lines on screen
+#define DEF_SCREEN_COLUMNS 80   // Default number of columns on screen
 
 #define CR 13                   // Various keys
 #define LF 10

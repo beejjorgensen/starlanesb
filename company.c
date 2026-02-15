@@ -77,7 +77,7 @@ void more_coinfo(void)
         return;                 // Don't bother if there are no active co's
 
     if ((more_coinfo =
-         newwin(7 + numco, 52, 5, (COLUMNS - 52) / 2)) == NULL) {
+         newwin(7 + numco, 52, 5, (SCREEN_COLUMNS - 52) / 2)) == NULL) {
         fprintf(stderr, "starlanes: couldn't create more_coinfo window\n");
         exit(1);
     }

@@ -10,8 +10,8 @@ extern char *VERSION;
 
 extern int MAPX;                       // X dimension of map
 extern int MAPY;                       // Y dimension of map
-extern int LINES;                      // Lines in screen
-extern int COLUMNS;                    // Columns in screen
+extern int SCREEN_LINES;               // Lines in screen
+extern int SCREEN_COLUMNS;             // Columns in screen
 extern char *map;                      // Pointer to the map data
 extern PLAYER *pl;                     // Pointer to array of players
 extern COMPANY *co;                    // Pointer to array of companies

@@ -37,7 +37,7 @@ void show_standings(char *title)
     int i, j, order[MAXPLAYERS], togo, sum;
 
     if ((stand =
-         newwin(9 + numplayers, 60, 5, (COLUMNS - 60) / 2)) == NULL) {
+         newwin(9 + numplayers, 60, 5, (SCREEN_COLUMNS - 60) / 2)) == NULL) {
         fprintf(stderr, "starlanes: couldn't create standings window\n");
         exit(1);
     }

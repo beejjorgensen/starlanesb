@@ -33,7 +33,7 @@ void buy_sell(void)
     sprintf(s, " %s (Cash: $%d) ", pl[turn].name, pl[turn].cash);
     clear_general(s, 0);
 
-    center(general, COLUMNS - 2, 1,
+    center(general, SCREEN_COLUMNS - 2, 1,
            "Arrow keys to select a company, return to trade, escape when done:");
 
     for (i = 0; i < cocount; i++) {
@@ -141,10 +141,10 @@ void buy_sell(void)
             if (amt)
                 show_coinfo();
 
-            pos1 = ((COLUMNS - 2) - strlen(s)) / 2;
+            pos1 = ((SCREEN_COLUMNS - 2) - strlen(s)) / 2;
             pos2 = pos1 + strlen(s);
             wattron(general, GENERAL_TITLE);
-            center(general, COLUMNS - 2, 0, s);
+            center(general, SCREEN_COLUMNS - 2, 0, s);
             wattroff(general, GENERAL_TITLE);
             wattron(general, GENERAL_BORDER);
             mvwaddstr(general, 0, pos1 - 4, "////");

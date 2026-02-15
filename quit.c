@@ -16,7 +16,7 @@ void quit_yn(void)
 {
     WINDOW *yn;
 
-    if ((yn = newwin(5, 42, 5, (COLUMNS - 42) / 2)) == NULL) {
+    if ((yn = newwin(5, 42, 5, (SCREEN_COLUMNS - 42) / 2)) == NULL) {
         fprintf(stderr,
                 "starlanes: couldn't open window for y/n prompt\n");
         exit(1);

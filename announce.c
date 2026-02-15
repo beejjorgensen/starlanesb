@@ -17,12 +17,12 @@ void new_co_announce(int newc)
 
     clear_general(" Special Announcement! ", 1);
     wattron(general, A_BOLD);
-    center(general, COLUMNS - 2, 2,
+    center(general, SCREEN_COLUMNS - 2, 2,
            "A new shipping company has been formed!");
     sprintf(s, "Its name is %s", co[newc].name);
-    center(general, COLUMNS - 2, 4, s);
+    center(general, SCREEN_COLUMNS - 2, 4, s);
     wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 7, "Press any key to continue...");
+    center(general, SCREEN_COLUMNS - 2, 7, "Press any key to continue...");
     wnoutrefresh(general);
     noecho();
     raw();
@@ -60,26 +60,26 @@ void suck_announce(int conum, int grown)
     clear_general(" Special Announcement! ", 1);
     wattron(general, A_BOLD);
     if (conum >= 0 && grown == 1) {     // Already existed
-        center(general, COLUMNS - 2, 2, "The company named");
-        center(general, COLUMNS - 2, 3, co[conum].name);
-        center(general, COLUMNS - 2, 4,
+        center(general, SCREEN_COLUMNS - 2, 2, "The company named");
+        center(general, SCREEN_COLUMNS - 2, 3, co[conum].name);
+        center(general, SCREEN_COLUMNS - 2, 4,
                "has been sucked into a black hole!");
-        center(general, COLUMNS - 2, 6, "All players' holdings lost.");
+        center(general, SCREEN_COLUMNS - 2, 6, "All players' holdings lost.");
         show_coinfo();          // Show change
     } else if (conum >= 0 && grown == 0) {      // Was trying to start up
-        center(general, COLUMNS - 2, 2,
+        center(general, SCREEN_COLUMNS - 2, 2,
                "The company that would have been named");
-        center(general, COLUMNS - 2, 3, co[conum].name);
-        center(general, COLUMNS - 2, 4,
+        center(general, SCREEN_COLUMNS - 2, 3, co[conum].name);
+        center(general, SCREEN_COLUMNS - 2, 4,
                "has been sucked into a black hole!");
     } else {                    // Was only a starter company, not a real one yet
-        center(general, COLUMNS - 2, 2,
+        center(general, SCREEN_COLUMNS - 2, 2,
                "The new company site just placed");
-        center(general, COLUMNS - 2, 3,
+        center(general, SCREEN_COLUMNS - 2, 3,
                "has been sucked into a black hole!");
     }
     wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 8, "Press any key to continue...");
+    center(general, SCREEN_COLUMNS - 2, 8, "Press any key to continue...");
     wnoutrefresh(general);
     noecho();
     raw();
@@ -95,13 +95,13 @@ void merge_announce(int c1, int c2)
 {
     clear_general(" Special Announcement! ", 1);
     wattron(general, A_BOLD);
-    center(general, COLUMNS - 2, 2, co[c2].name);
+    center(general, SCREEN_COLUMNS - 2, 2, co[c2].name);
     wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 3, "has just been merged into");
+    center(general, SCREEN_COLUMNS - 2, 3, "has just been merged into");
     wattron(general, A_BOLD);
-    center(general, COLUMNS - 2, 4, co[c1].name);
+    center(general, SCREEN_COLUMNS - 2, 4, co[c1].name);
     wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 7, "Press any key to continue...");
+    center(general, SCREEN_COLUMNS - 2, 7, "Press any key to continue...");
     wnoutrefresh(general);
     noecho();
     raw();
@@ -118,7 +118,7 @@ void xaction_announce(int c1, int c2)
     int i, totalshares = 0, newshares, bonus, totalholdings;
 
     clear_general(" Stock Transactions ", 0);
-    center(general, COLUMNS - 2, 2, co[c2].name);
+    center(general, SCREEN_COLUMNS - 2, 2, co[c2].name);
     wattron(general, color ? YELLOW_ON_BLUE | A_BOLD : A_REVERSE);
     mvwprintw(general, 2, 4,
               "=Player===============Old Stock===New Stock===Total Holdings===Bonus=");
@@ -147,7 +147,7 @@ void xaction_announce(int c1, int c2)
         pl[i].cash += bonus;
     }
 
-    center(general, COLUMNS - 2, 8, "Press any key to continue...");
+    center(general, SCREEN_COLUMNS - 2, 8, "Press any key to continue...");
     wnoutrefresh(general);
     noecho();
     raw();
@@ -167,10 +167,10 @@ void split_announce(int conum)
     clear_general(" Special Announcement! ", 1);
     wattron(general, A_BOLD);
     sprintf(s, "The stock of %s", co[conum].name);
-    center(general, COLUMNS - 2, 2, s);
-    center(general, COLUMNS - 2, 3, "has split two-for-one!");
+    center(general, SCREEN_COLUMNS - 2, 2, s);
+    center(general, SCREEN_COLUMNS - 2, 3, "has split two-for-one!");
     wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 6, "Press any key to continue...");
+    center(general, SCREEN_COLUMNS - 2, 6, "Press any key to continue...");
 
     co[conum].price = (int) (((float) (co[conum].price) / 2.0) + 0.5);
     for (i = 0; i < numplayers; i++)

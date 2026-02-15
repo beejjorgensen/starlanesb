@@ -61,7 +61,7 @@ void clear_general(char *s, int blink)
     box(general, '|', '/');
     wattroff(general, GENERAL_BORDER);
     wattron(general, blink ? GENERAL_TITLE_BLINK : GENERAL_TITLE);
-    center(general, COLUMNS - 2, 0, s);
+    center(general, SCREEN_COLUMNS - 2, 0, s);
     wattroff(general, blink ? GENERAL_TITLE_BLINK : GENERAL_TITLE);
 }
 

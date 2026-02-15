@@ -22,18 +22,10 @@
 void initialize(void)
 {
     int i, j;
-    char *lines, *columns;
 
     // Get the size of the screen
-
-    if ((lines = getenv("LINES")) == NULL
-        || (columns = getenv("COLUMNS")) == NULL) {
-        LINES = DEF_LINES;
-        COLUMNS = DEF_COLUMNS;
-    } else {
-        LINES = atoi(lines);
-        COLUMNS = atoi(columns);
-    }
+    SCREEN_LINES = DEF_SCREEN_LINES;
+    SCREEN_COLUMNS = DEF_SCREEN_COLUMNS;
 
     // Allocate space for everything
 
@@ -107,13 +99,13 @@ void initialize(void)
     }
 
     if ((general =
-         newwin(LINES - 2 - MAPY - 2, COLUMNS - 2, MAPY + 3, 1)) == NULL) {
+         newwin(SCREEN_LINES - 2 - MAPY - 2, SCREEN_COLUMNS - 2, MAPY + 3, 1)) == NULL) {
         fprintf(stderr, "starlanes: can't create general window\n");
         exit(1);
     }
 
     if ((coinfo =
-         newwin(MAPY + 2, COLUMNS - 2 - (MAPX * 3 + 2), 1,
+         newwin(MAPY + 2, SCREEN_COLUMNS - 2 - (MAPX * 3 + 2), 1,
                 MAPX * 3 + 3)) == NULL) {
         fprintf(stderr, "starlanes: can't create coinfo window\n");
         exit(1);
@@ -136,7 +128,7 @@ void get_num_players(void)
     clear();
     refresh();
 
-    WINDOW *npwin = newwin(LINES, COLUMNS, 0, 0);
+    WINDOW *npwin = newwin(SCREEN_LINES, SCREEN_COLUMNS, 0, 0);
 
     if (color)
         wattron(npwin, YELLOW_ON_BLACK | A_BOLD);
@@ -144,15 +136,15 @@ void get_num_players(void)
     box(npwin, '$', '$');
 
     sprintf(s, " V%s ", VERSION);
-    center(npwin, COLUMNS, LINES - 1, s);
+    center(npwin, SCREEN_COLUMNS, SCREEN_LINES - 1, s);
     if (color)
         wattroff(npwin, YELLOW_ON_BLACK | A_BOLD);
 
     wattron(npwin, color ? YELLOW_ON_BLUE | A_BOLD : A_REVERSE);
-    center(npwin, COLUMNS, 6, "* S * T * A * R ** L * A * N * E * S *");
+    center(npwin, SCREEN_COLUMNS, 6, "* S * T * A * R ** L * A * N * E * S *");
     wattroff(npwin, color ? YELLOW_ON_BLUE | A_BOLD : A_REVERSE);
     sprintf(s, "Please enter the number of players [1-%d]: ", MAXPLAYERS);
-    center(npwin, COLUMNS, 9, s);
+    center(npwin, SCREEN_COLUMNS, 9, s);
     wrefresh(npwin);
     noecho();
     raw();
@@ -168,7 +160,7 @@ void get_num_players(void)
     nl();
     for (i = 0; i < numplayers; i++) {
         sprintf(s, "Player %d, enter your name: ", i + 1);
-        center(npwin, COLUMNS - 8, 11 + i, s);
+        center(npwin, SCREEN_COLUMNS - 8, 11 + i, s);
         wrefresh(npwin);
         my_mvwgetstr(npwin, i + 11, 49, 20, 0, pl[i].name);
         if (pl[i].name[0] == '\0')

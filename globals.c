@@ -4,8 +4,8 @@ char *VERSION = "1.4.0";
 
 int MAPX = 12;                  // X dimension of map
 int MAPY = 10;                  // Y dimension of map
-int LINES;                      // Lines in screen
-int COLUMNS;                    // Columns in screen
+int SCREEN_LINES;               // Lines in screen
+int SCREEN_COLUMNS;             // Columns in screen
 char *map;                      // Pointer to the map data
 PLAYER *pl;                     // Pointer to array of players
 COMPANY *co;                    // Pointer to array of companies
