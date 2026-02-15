@@ -1,15 +1,11 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "conf.h"
-#include "globals.h"
-#include "consts.h"
-#include "colors.h"
-#include "ui.h"
-#include "map.h"
-#include "quit.h"
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "colors.h"
+#include "consts.h"
+#include "globals.h"
+#include "ui.h"
 
 /**
  * For sorting for show_standings().

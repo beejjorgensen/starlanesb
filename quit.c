@@ -1,17 +1,13 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "conf.h"
+#include CURSES_HEADER
 #include "globals.h"
-#include "consts.h"
 #include "colors.h"
 #include "ui.h"
-#include "map.h"
 #include "quit.h"
 #include "standings.h"
-#include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
 
 /**
  * Asks the users if they're sure they want to quit.

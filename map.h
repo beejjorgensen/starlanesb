@@ -1,6 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "consts.h"
+
 void showmap(void);
 void drawmap(int loc, char c);
 

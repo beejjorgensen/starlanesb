@@ -1,21 +1,19 @@
-#include "conf.h"
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "globals.h"
+#include "conf.h"
+#include CURSES_HEADER
+#include "announce.h"
+#include "company.h"
 #include "consts.h"
-#include "colors.h"
-#include "ui.h"
+#include "globals.h"
 #include "map.h"
+#include "merge.h"
+#include "move.h"
 #include "quit.h"
 #include "standings.h"
-#include "announce.h"
-#include "move.h"
-#include "merge.h"
-#include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "ui.h"
 
 /**
  * Gets a players move
@@ -51,7 +49,7 @@ int get_move(void)
     sprintf(s, " %s (Cash: $%d) ", pl[turn].name, pl[turn].cash);
     clear_general(s, 0);
     sprintf(s, " %s, enter your move [1-%d]: ", pl[turn].name, NUMMOVES);
-    mvwprintw(general, 2, 1, s);
+    mvwprintw(general, 2, 1, "%s", s);
     show_coinfo();
     noecho();
     do {

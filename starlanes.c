@@ -1,27 +1,20 @@
-#include "conf.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <time.h>
 #include <unistd.h>
+#include "conf.h"
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
-
-#include "globals.h"
 #include "colors.h"
-#include "consts.h"
 #include "company.h"
-#include "player.h"
-#include "ui.h"
+#include "consts.h"
+#include "globals.h"
 #include "map.h"
-#include "announce.h"
 #include "move.h"
+#include "player.h"
 #include "quit.h"
-#include "standings.h"
 #include "trade.h"
+#include "ui.h"
 
 /**
  * Sets up the map, players, and companies

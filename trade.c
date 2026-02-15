@@ -1,20 +1,17 @@
-#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
+#include <unistd.h>
 #include "conf.h"
-#include "globals.h"
-#include "consts.h"
-#include "colors.h"
-#include "ui.h"
-#include "map.h"
-#include "announce.h"
-#include "standings.h"
-#include "quit.h"
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "colors.h"
+#include "company.h"
+#include "consts.h"
+#include "globals.h"
+#include "quit.h"
+#include "standings.h"
+#include "ui.h"
 
 /**
  * Screen that allows the user to buy and sell stocks.
@@ -61,7 +58,7 @@ void buy_sell(void)
             wattron(general, A_REVERSE);
         else
             wattron(general, attrs);
-        mvwprintw(general, i + 3, 20, co[cos[i]].name);
+        mvwprintw(general, i + 3, 20, "%s", co[cos[i]].name);
         if (i == cursor)
             wattroff(general, A_REVERSE);
         else
@@ -116,7 +113,7 @@ void buy_sell(void)
             max = pl[turn].cash / co[cos[cursor]].price;
             min = -pl[turn].holdings[cos[cursor]];
             sprintf(s, "Amount (%d to %d): ", min, max);
-            mvwprintw(general, cursor + 3, 40, s);
+            mvwprintw(general, cursor + 3, 40, "%s", s);
             wnoutrefresh(general);
             my_mvwgetstr(general, cursor + 3, 40 + strlen(s), 9, 1,
                          amtstr);
@@ -182,11 +179,11 @@ void buy_sell(void)
             }
 
             wattron(general, attrs);
-            mvwprintw(general, cursor + 3, 20, co[cos[cursor]].name);
+            mvwprintw(general, cursor + 3, 20, "%s", co[cos[cursor]].name);
             wattroff(general, attrs);
 
             wattron(general, color ? BLACK_ON_WHITE : A_REVERSE);
-            mvwprintw(general, newcur + 3, 20, co[cos[newcur]].name);
+            mvwprintw(general, newcur + 3, 20, "%s", co[cos[newcur]].name);
             wattroff(general, color ? BLACK_ON_WHITE : A_REVERSE);
 
             wnoutrefresh(general);

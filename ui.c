@@ -1,13 +1,11 @@
 #include <string.h>
 #include <ctype.h>
-#include "globals.h"
-#include "colors.h"
-#include "ui.h"
 #include "conf.h"
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "colors.h"
+#include "consts.h"
+#include "globals.h"
+#include "ui.h"
 
 /**
  * Centers a piece of text on a window on the specified row.

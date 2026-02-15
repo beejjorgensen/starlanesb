@@ -1,15 +1,10 @@
 #include <stdlib.h>
 #include "conf.h"
-#include "globals.h"
-#include "consts.h"
-#include "colors.h"
-#include "ui.h"
-#include "map.h"
-#include "announce.h"
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "announce.h"
+#include "consts.h"
+#include "globals.h"
+#include "map.h"
 
 /**
  * Does all the nasty business behind a merge

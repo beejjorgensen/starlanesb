@@ -1,5 +1,6 @@
 #include "consts.h"
 #include "globals.h"
+#include "player.h"
 
 /**
  * Gives bonus to player based on current holdings.

@@ -1,13 +1,12 @@
 #include "conf.h"
-#include "globals.h"
-#include "consts.h"
-#include "colors.h"
-#include "ui.h"
-#include "map.h"
+#include <stdio.h>
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "colors.h"
+#include "company.h"
+#include "consts.h"
+#include "globals.h"
+#include "map.h"
+#include "ui.h"
 
 /**
  * Announce the coming of a new company

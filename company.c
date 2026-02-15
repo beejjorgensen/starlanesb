@@ -1,14 +1,12 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "conf.h"
-#include "globals.h"
-#include "company.h"
-#include "colors.h"
-#include "consts.h"
-#include "ui.h"
 #include CURSES_HEADER
-#ifdef HAVE_TERMIOS_H
-#include <termios.h>
-#endif
+#include "colors.h"
+#include "company.h"
+#include "consts.h"
+#include "globals.h"
+#include "ui.h"
 
 /**
  * Draws the company info screen
