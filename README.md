@@ -4,8 +4,9 @@ This is a C version of the classic space trading game [_Star
 Lanes_](https://github.com/beejjorgensen/starlanes-info) that I wrote
 back in the mid 1990s based on the Osborne FOG disk source.
 
-I was in college and my skills were poor, so the source is just one
-gigantic file. Maybe I'll break that up since it's so offensive.
+I was in college and my skills were poor. Lots of globals in this thing.
+Could stand to be cleaned up a bit. It was one giant file, but I've
+broken it up so we could all be less offended.
 
 ## Building
 
