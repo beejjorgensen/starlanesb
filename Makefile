@@ -17,8 +17,8 @@ $(TARGET): starlanes.c
 install:
 	install -d $(BINDIR)
 	install -m 755 $(TARGET) $(BINDIR)/$(TARGET)
-	install -d $(MANDIR)
-	install -m 644 $(TARGET).6 $(MANDIR)/$(TARGET).6
+	install -d $(MANDIR)/man6
+	install -m 644 $(TARGET).6 $(MANDIR)/man6/$(TARGET).6
 
 clean:
 	rm -f *.o
