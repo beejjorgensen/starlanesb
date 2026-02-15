@@ -1,11 +1,14 @@
+#include "conf.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
-#include <curses.h>
+#include CURSES_H
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
+#endif
 
 // Color stuff
 

@@ -7,17 +7,38 @@ back in the mid 1990s based on the Osborne FOG disk source.
 I was in college and my skills were poor, so the source is just one
 gigantic file. Maybe I'll break that up since it's so offensive.
 
-## Building and Installation
+## Building
 
-Type "make" to build the `starlanes` binary.
+Build steps:
 
-You can override the following macros:
+* Run `./conf` to configure.
+* Run `make` to build.
 
-* `CURSESLIB=ncurses`: this is added to the command line as `-lncurses`.
-* `CC`: which compiler to use.
-* `CCOPTS=-Wall -Wextra`: compiler options.
-* `prefix=/usr`: where things are installed relative to root.
-* `DESTDIR`: if you want to set another "root" for the install.
+## Installation
+
+You can set a prefix with:
+
+```
+./conf --prefix=/usr/local
+```
+
+And the man directory:
+
+```
+./conf --mandir=/usr/local/man
+```
+
+And you can install to a different root with `DESTDIR`:
+
+```
+make DESTDIR=fakeroot install
+```
+
+Or, last resort, as root you can just do this like it's 1999:
+
+```
+make install
+```
 
 ## Version Info
 

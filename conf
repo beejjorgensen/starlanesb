@@ -1,0 +1,210 @@
+#!/bin/sh
+
+# https://github.com/beejjorgensen/bconf/
+#
+# Yes, I rolled my own autotools. You probably have mixed feelings about
+# this.
+
+CONF_SCRIPT_NAME=$(basename $0)
+
+PREFIX=/usr
+MANDIR=
+
+error_exit() {
+    printf "%s: %s\n" "$CONF_SCRIPT_NAME" "$*" 1>&2
+    exit 1
+}
+
+usage_exit() {
+    printf "usage: %s [-h|--help] [--prefix=path] [--mandir=path]\n" "$CONF_SCRIPT_NAME" 1>&2
+    exit 1
+}
+
+parse_command_line() {
+    for o in "$@"; do
+        case $o in
+            --help|-h)
+                usage_exit
+                ;;
+            --prefix=*)
+                PREFIX="${o##*=}"
+                ;;
+            --mandir=*)
+                MANDIR="${o##*=}"
+                ;;
+            *)
+                usage_exit
+                ;;
+        esac
+    done
+
+    if [ -z "$MANDIR" ]; then
+        MANDIR=${PREFIX}/share/man
+    fi
+}
+
+normalize_name() {
+    local name="$1"
+
+    printf "%s" "$name" | tr 'a-z' 'A-Z' | tr -c 'A-Z' '_'
+}
+
+get_temp_name() {
+    printf "%s" "/tmp/beejconf.$(date +%s).$$.tmp"
+}
+
+get_compiler() {
+    find_executable_list gcc clang cc
+}
+
+compile() {
+    local name="$1"
+    local opts="$2" outopt=""
+    local libopts="$3"
+
+    local compiler=$(get_compiler)
+    local outname=$(get_temp_name)
+    local result
+
+    case "$compiler" in
+        gcc|clang)
+            opts="-Wall -Wextra ${opts}"
+            outopt="-o"
+            ;;
+        *)
+            outopt="-o"
+    esac
+
+    $compiler $opts $outopt "$outname" "$name" $libopts 2>&1 > /dev/null
+
+    result=$?
+
+    rm -f "$outname"
+
+    return $result
+}
+
+find_executable_list() {
+    local candidate
+
+    for candidate in "$@"; do
+        if command -v "$candidate" 2>&1 > /dev/null; then
+            printf "%s" "$candidate"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+do_has_header() {
+    local header="$1"
+    local name=$(get_temp_name).c
+    local result
+
+    cat <<EOF > "$name"
+    #include <$header>
+    int main(void) { return 0; }
+EOF
+
+    compile "$name" 2>&1 > /dev/null
+
+    result=$?
+
+    rm -f "$name"
+
+    return $result
+}
+
+do_has_library() {
+    local library="$1"
+    local name=$(get_temp_name).c
+    local result
+
+    cat <<EOF > "$name"
+    int main(void) { return 0; }
+EOF
+
+    compile "$name" "" "-l${library}" 2>&1 > /dev/null
+
+    result=$?
+
+    rm -f "$name"
+
+    return $result
+}
+
+find_executable() {
+    local name="$1" normname value
+
+    normname=$(normalize_name "$name")
+
+    if command -v "$name" 2>&1 > /dev/null; then
+        value=1
+    else
+        value=0
+    fi
+
+    printf "BCONF_HAS_EXE_%s=%d\n" "$normname" "$value"
+}
+
+find_header() {
+    local name="$1" normname value
+
+    normname=$(normalize_name "$name")
+
+    do_has_header "$name"
+}
+
+find_library() {
+    local name="$1" normname value
+
+    normname=$(normalize_name "$name")
+
+    do_has_library "$name"
+}
+
+#######################################################################
+
+parse_command_line "$@"
+
+for h in ncurses.h curses.h; do
+    if find_header "$h"; then
+        curses_h="$h"
+        break
+    fi
+done
+
+if [ -z "$curses_h" ]; then
+    error_exit "cannot find curses header"
+fi
+
+for l in ncurses curses; do
+    if find_library "$l"; then
+        curses_lib="$l"
+        break
+    fi
+done
+
+if [ -z "$curses_lib" ]; then
+    error_exit "cannot find curses library"
+fi
+
+if find_header "termios.h"; then
+    termios="#define HAVE_TERMIOS_H"
+fi
+    
+cat <<EOF > conf.make
+# Computer-generated. Do not edit.
+
+CURSES_LIBRARY=$curses_lib
+prefix=$PREFIX
+mandir=$MANDIR
+EOF
+
+cat <<EOF > conf.h
+/* Computer-generated. Do not edit. */
+
+#define CURSES_H <$curses_h>
+${termios}
+EOF

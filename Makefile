@@ -1,32 +1,28 @@
-# Set this to your curses lib to link to:
-CURSESLIB=ncurses
+include conf.make
 
-# Things you can override during install:
-prefix=/usr
 DESTDIR=
-
 CCOPTS=-Wall -Wextra
-
 TARGET=starlanes
 
 .PHONY: all clean pristine
 
+BINDIR=$(DESTDIR)$(prefix)/bin
+MANDIR=$(DESTDIR)$(mandir)
+
 all: $(TARGET)
 
 $(TARGET): starlanes.c
-	$(CC) $(CCOPTS) -o $@ $^ -l$(CURSESLIB)
+	$(CC) $(CCOPTS) -o $@ $^ -l$(CURSES_LIBRARY)
 
 install:
-	cp $(TARGET) $(DESTDIR)/$(prefix)/bin/$(TARGET)
-	chown root:root $(DESTDIR)/$(prefix)/bin/$(TARGET)
-	chmod 755 $(DESTDIR)/$(prefix)/bin/$(TARGET)
-
-	cp $(TARGET).6 $(DESTDIR)/$(prefix)/share/man/man6/$(TARGET).6
-	chown root:root $(DESTDIR)/$(prefix)/share/man/man6/$(TARGET).6
-	chmod 644 $(DESTDIR)/$(prefix)/share/man/man6/$(TARGET).6
+	install -d $(BINDIR)
+	install -m 755 $(TARGET) $(BINDIR)/$(TARGET)
+	install -d $(MANDIR)
+	install -m 644 $(TARGET).6 $(MANDIR)/$(TARGET).6
 
 clean:
 	rm -f *.o
 
 pristine: clean
+	rm -f conf.make conf.h
 	rm -f $(TARGET)
