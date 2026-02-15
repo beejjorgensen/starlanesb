@@ -19,13 +19,15 @@ You can override the following macros:
 * `prefix=/usr`: where things are installed relative to root.
 * `DESTDIR`: if you want to set another "root" for the install.
 
-## AI Version 1.3.0
+## Version Info
 
 David Barnsdale wrote an AI for this thing and released it as
 [1.3.0](https://web.archive.org/web/20190701060458/https://www.barnsdle.demon.co.uk/game/starlanes.html).
 But I'm having trouble getting that to run without crashing. So I've
 forged ahead with modernizing the working one, and we'll see about
 backporting the AI into it later.
+
+This one is based on 1.2.2.
 
 ---
 
