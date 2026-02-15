@@ -17,17 +17,7 @@
 #include "player.h"
 #include "ui.h"
 #include "map.h"
-
-// Macros to look at surrounding spaces on the map
-
-#define up_obj(move) (((move)-MAPX < 0)?SPACE:map[(move)-MAPX])
-#define down_obj(move) (((move)+MAPX >= MAPX*MAPY)?SPACE:map[(move)+MAPX])
-#define left_obj(move) (((move)%MAPX)?map[(move)-1]:SPACE)
-#define right_obj(move) (((move)%MAPX == MAPX-1)?SPACE:map[(move)+1])
-#define iscompany(c) ((c)>='A'&&(c)<='Z')
-#define ripe(c) ((c)==STAR||(c)==NEWCO)
-#define co_near(move) (iscompany(up_obj(move))||iscompany(down_obj(move))||iscompany(left_obj(move))||iscompany(right_obj(move)))
-#define s_or_bh(c) ((c)==SPACE||(c)==BLACKHOLE)
+#include "announce.h"
 
 // Function prototypes
 
@@ -37,21 +27,10 @@ int get_move(void);
 void do_move(int move);
 void do_merge(int *c1, int *c2, int *o1, int *o2);
 void holding_bonus(void);
-void holding_bonus(void);
 void buy_sell(void);
 int check_endgame(void);
 int count_used_sectors(void);
 void calc_cost(int cnum, int move, int n, int s, int w, int e);
-void new_co_announce(int newc);
-void suck_announce(int conum, int grown);
-void merge_announce(int c1, int c2);
-void xaction_announce(int c1, int c2);
-void split_announce(int conum);
-int co_avail(void);
-void clear_general(char *s, int blink);
-int my_mvwgetstr(WINDOW * win, int y, int x, int max, int num_only,
-                 char *s);
-void redraw(void);
 void show_standings(char *title);
 int order_compare(const void *v1, const void *v2);
 void quit_yn(void);
@@ -495,183 +474,6 @@ void calc_cost(int cnum, int move, int n, int s, int w, int e)
 }
 
 /**
- * Announce the coming of a new company
- */
-void new_co_announce(int newc)
-{
-    char s[160];
-
-    clear_general(" Special Announcement! ", 1);
-    wattron(general, A_BOLD);
-    center(general, COLUMNS - 2, 2,
-           "A new shipping company has been formed!");
-    sprintf(s, "Its name is %s", co[newc].name);
-    center(general, COLUMNS - 2, 4, s);
-    wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 7, "Press any key to continue...");
-    wnoutrefresh(general);
-    noecho();
-    raw();
-    doupdate();
-    while (getch() == CTRL_L)
-        redraw();
-}
-
-/**
- * When a company gets drawn into a black hole (value < 0)
- */
-void suck_announce(int conum, int grown)
-{
-    int i;
-
-    if (conum >= 0) {
-        for (i = 0; i < MAPX * MAPY; i++) {     // Clear the company from the map
-            if (map[i] == conum + 'A') {
-                map[i] = SPACE;
-                drawmap(i, SPACE);
-            }
-        }
-        wnoutrefresh(mapwin);
-
-        for (i = 0; i < numplayers; i++)        // Ditch all player holdings
-            pl[i].holdings[conum] = 0;
-
-        co[conum].size = co[conum].price = 0;   // Eliminate the company
-    } else {
-        map[grown] = SPACE;     // Grown contains the opposite of the site
-        drawmap(grown, SPACE);
-        wnoutrefresh(mapwin);
-    }
-
-    clear_general(" Special Announcement! ", 1);
-    wattron(general, A_BOLD);
-    if (conum >= 0 && grown == 1) {     // Already existed
-        center(general, COLUMNS - 2, 2, "The company named");
-        center(general, COLUMNS - 2, 3, co[conum].name);
-        center(general, COLUMNS - 2, 4,
-               "has been sucked into a black hole!");
-        center(general, COLUMNS - 2, 6, "All players' holdings lost.");
-        show_coinfo();          // Show change
-    } else if (conum >= 0 && grown == 0) {      // Was trying to start up
-        center(general, COLUMNS - 2, 2,
-               "The company that would have been named");
-        center(general, COLUMNS - 2, 3, co[conum].name);
-        center(general, COLUMNS - 2, 4,
-               "has been sucked into a black hole!");
-    } else {                    // Was only a starter company, not a real one yet
-        center(general, COLUMNS - 2, 2,
-               "The new company site just placed");
-        center(general, COLUMNS - 2, 3,
-               "has been sucked into a black hole!");
-    }
-    wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 8, "Press any key to continue...");
-    wnoutrefresh(general);
-    noecho();
-    raw();
-    doupdate();
-    while (getch() == CTRL_L)
-        redraw();
-}
-
-/**
- * Announce a merger.
- */
-void merge_announce(int c1, int c2)
-{
-    clear_general(" Special Announcement! ", 1);
-    wattron(general, A_BOLD);
-    center(general, COLUMNS - 2, 2, co[c2].name);
-    wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 3, "has just been merged into");
-    wattron(general, A_BOLD);
-    center(general, COLUMNS - 2, 4, co[c1].name);
-    wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 7, "Press any key to continue...");
-    wnoutrefresh(general);
-    noecho();
-    raw();
-    doupdate();
-    while (getch() == CTRL_L)
-        redraw();
-}
-
-/**
- * Announce transactions after a merger.
- */
-void xaction_announce(int c1, int c2)
-{
-    int i, totalshares = 0, newshares, bonus, totalholdings;
-
-    clear_general(" Stock Transactions ", 0);
-    center(general, COLUMNS - 2, 2, co[c2].name);
-    wattron(general, color ? YELLOW_ON_BLUE | A_BOLD : A_REVERSE);
-    mvwprintw(general, 2, 4,
-              "=Player===============Old Stock===New Stock===Total Holdings===Bonus=");
-    wattroff(general, color ? YELLOW_ON_BLUE | A_BOLD : A_REVERSE);
-
-    for (i = 0; i < numplayers; i++)
-        totalshares += pl[i].holdings[c2];
-    if (totalshares == 0)
-        totalshares = 1;        // Prevent divide by zero
-
-    for (i = 0; i < numplayers; i++) {
-        newshares = (int) (((float) (pl[i].holdings[c2]) / 2.0) + 0.5);
-        totalholdings = pl[i].holdings[c1] + newshares;
-        bonus = 10 * co[c2].price * pl[i].holdings[c2] / totalshares;
-        wattron(general, A_BOLD);
-        mvwprintw(general, 3 + i, 4, " %-20s   ", pl[i].name);
-        wattroff(general, A_BOLD);
-        wprintw(general, "%-5d       %-5d     %5d            ",
-                pl[i].holdings[c2], newshares, totalholdings);
-        wattron(general, A_BOLD);
-        wprintw(general, "$%-5d", bonus);
-        wattroff(general, A_BOLD);
-
-        pl[i].holdings[c1] = totalholdings;
-        pl[i].holdings[c2] = 0;
-        pl[i].cash += bonus;
-    }
-
-    center(general, COLUMNS - 2, 8, "Press any key to continue...");
-    wnoutrefresh(general);
-    noecho();
-    raw();
-    doupdate();
-    while (getch() == CTRL_L)
-        redraw();
-}
-
-/**
- * Happens when a company splits 2 for 1.
- */
-void split_announce(int conum)
-{
-    char s[160];
-    int i;
-
-    clear_general(" Special Announcement! ", 1);
-    wattron(general, A_BOLD);
-    sprintf(s, "The stock of %s", co[conum].name);
-    center(general, COLUMNS - 2, 2, s);
-    center(general, COLUMNS - 2, 3, "has split two-for-one!");
-    wattroff(general, A_BOLD);
-    center(general, COLUMNS - 2, 6, "Press any key to continue...");
-
-    co[conum].price = (int) (((float) (co[conum].price) / 2.0) + 0.5);
-    for (i = 0; i < numplayers; i++)
-        pl[i].holdings[conum] *= 2;
-
-    show_coinfo();
-    wnoutrefresh(general);
-    noecho();
-    raw();
-    doupdate();
-    while (getch() == CTRL_L)
-        redraw();
-}
-
-/**
  * Gives bonus to player based on current holdings.
  */
 void holding_bonus(void)
@@ -895,103 +697,6 @@ int count_used_sectors(void)
             maptotal++;
 
     return maptotal;
-}
-
-/**
- * Returns the index of the next available company, or -1 if all
- * companies exist.
- */
-int co_avail(void)
-{
-    int i;
-    for (i = 0; i < NUMCO; i++)
-        if (!co[i].size)
-            return i;
-    return -1;
-}
-
-/**
- * Clears and titles the general window.
- */
-void clear_general(char *s, int blink)
-{
-    werase(general);
-    wattron(general, GENERAL_BORDER);
-    box(general, '|', '/');
-    wattroff(general, GENERAL_BORDER);
-    wattron(general, blink ? GENERAL_TITLE_BLINK : GENERAL_TITLE);
-    center(general, COLUMNS - 2, 0, s);
-    wattroff(general, blink ? GENERAL_TITLE_BLINK : GENERAL_TITLE);
-}
-
-/**
- * Does mywgetstr my way.
- */
-int my_mvwgetstr(WINDOW *win, int y, int x, int max, int num_only, char *s)
-{
-    int cur = 0, c, done = 0;
-
-    s[0] = '\0';
-
-    nl();
-    noecho();
-    raw();
-    keypad(stdscr, 0);
-    while (doupdate(), c = getch(), !done && (c != LF && c != CR)) {
-        if (c == CTRL_L) {
-            redraw();
-            continue;
-        }
-        if (c == erasechar() || c == BS || c == DEL) {
-            if (cur) {
-                cur--;
-                mvwaddch(win, y, x + cur, ' ');
-                s[cur] = '\0';
-                wmove(win, y, x + cur);
-                wnoutrefresh(win);
-            }
-        } else {
-            if (num_only == 1) {        // Only numbers and '-' allowed
-                if (!isdigit(c) && c != '-' && tolower(c) != 'm'
-                    && tolower(c) != 'n')
-                    continue;
-                if (tolower(c) == 'm' || tolower(c) == 'n') {
-                    if (cur == 0)
-                        done = 1;
-                    else
-                        continue;
-                }
-                if (c == '-' && cur != 0)
-                    continue;
-            }
-            if (cur < max) {
-                mvwaddch(win, y, x + cur, c);
-                s[cur] = c;
-                s[cur + 1] = '\0';
-                cur++;
-                wnoutrefresh(win);
-            }
-        }
-    }
-
-    nonl();
-    keypad(stdscr, 1);
-    return strlen(s);
-}
-
-/**
- * Redraws the screen.
- */
-void redraw(void)
-{
-    touchwin(stdscr);
-    touchwin(mapwin);
-    touchwin(coinfo);
-    touchwin(general);
-    refresh();
-    wrefresh(mapwin);
-    wrefresh(coinfo);
-    wrefresh(general);
 }
 
 /**

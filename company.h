@@ -9,5 +9,6 @@ typedef struct {
 
 void show_coinfo(void);
 void more_coinfo(void);
+int co_avail(void);
 
 #endif

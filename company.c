@@ -144,3 +144,16 @@ void more_coinfo(void)
     wnoutrefresh(coinfo);
 }
 
+/**
+ * Returns the index of the next available company, or -1 if all
+ * companies exist.
+ */
+int co_avail(void)
+{
+    int i;
+    for (i = 0; i < NUMCO; i++)
+        if (!co[i].size)
+            return i;
+    return -1;
+}
+
