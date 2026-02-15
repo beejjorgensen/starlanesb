@@ -51,7 +51,6 @@ void xaction_announce(int c1, int c2);
 void split_announce(int conum);
 int co_avail(void);
 void clear_general(char *s, int blink);
-void center(WINDOW * win, int width, int row, char *s);
 int my_mvwgetstr(WINDOW * win, int y, int x, int max, int num_only,
                  char *s);
 void redraw(void);
