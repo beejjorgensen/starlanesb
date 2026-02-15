@@ -1,3 +1,5 @@
+*.o
+*.d
 conf.make
 conf.h
 starlanes
