@@ -9,6 +9,7 @@ HEADERS=$(wildcard *.h)
 
 OBJS = $(SRCS:.c=.o)
 DEPS = $(SRCS:.c=.d)
+DEPSDIR = deps
 
 .PHONY: all clean pristine
 
@@ -21,7 +22,8 @@ $(TARGET): $(OBJS)
 	$(CC) $(CCOPTS) -o $@ $(OBJS) -l$(CURSES_LIBRARY)
 
 %.o: %.c
-	$(CC) $(CCOPTS) -MMD -MF $(@:.o=.d) -c $< -o $@
+	mkdir -p $(DEPSDIR)
+	$(CC) $(CCOPTS) -MMD -MF $(DEPSDIR)/$(@:.o=.d) -c $< -o $@
 
 install:
 	install -d $(BINDIR)
@@ -30,11 +32,12 @@ install:
 	install -m 644 $(TARGET).6 $(MANDIR)/man6/$(TARGET).6
 
 clean:
-	rm -f *.o *.d
+	rm -f *.o $(DEPSDIR)/*.d
 
 pristine: clean
 	rm -f conf.make conf.h
 	rm -f $(TARGET)
+	rmdir $(DEPSDIR) || true
 
--include $(DEPS)
+-include $(DEPSDIR)/$(DEPS)
 
